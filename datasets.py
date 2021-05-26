@@ -6,7 +6,7 @@ import numpy as np
 
 
 class BsdsDataset(data.Dataset):
-    def __init__(self, dataset_dir='./data/HED-BSDS', split='train'):
+    def __init__(self, dataset_dir='./data/TDP', split='train'):
         # Set dataset directory and split.
         self.dataset_dir = dataset_dir
         self.split       = split
@@ -15,7 +15,7 @@ class BsdsDataset(data.Dataset):
         if self.split == 'train':
             self.list_path = join(self.dataset_dir, 'train_pair.lst')
         else:  # Assume test.
-            self.list_path = join(self.dataset_dir, 'test.lst')
+            self.list_path = join(self.dataset_dir, 'test_1.lst')
         with open(self.list_path, 'r') as f:
             lines = f.readlines()
         lines = [line.strip() for line in lines]  # Remove the newline at last.
@@ -41,6 +41,7 @@ class BsdsDataset(data.Dataset):
             edge_path = join(self.dataset_dir, self.edges_path[index])
             edge = cv2.imread(edge_path, cv2.IMREAD_GRAYSCALE)
             edge = edge[np.newaxis, :, :]  # Add one channel at first (CHW).
+            #print(edge_path)
             edge[edge < 127.5]  = 0.0
             edge[edge >= 127.5] = 1.0
             edge = edge.astype(np.float32)

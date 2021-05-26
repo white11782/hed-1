@@ -27,7 +27,7 @@ class HED(nn.Module):
         self.conv5_2 = nn.Conv2d(512, 512, 3, padding=1)
         self.conv5_3 = nn.Conv2d(512, 512, 3, padding=1)
 
-        self.relu = nn.ReLU()
+        self.relu = nn.ReLU(inplace=True)
         # Note: ceil_mode – when True, will use ceil instead of floor to compute the output shape.
         #       The reason to use ceil mode here is that later we need to upsample the feature maps and crop the results
         #       in order to have the same shape as the original image. If ceil mode is not used, the up-sampled feature

@@ -44,13 +44,13 @@ parser.add_argument('--vgg16_caffe',      default='',                help='Resum
 parser.add_argument('--checkpoint',       default='',                help='Resume the checkpoint.')
 parser.add_argument('--caffe_model',      default='',                help='Resume HED Caffe model.')
 parser.add_argument('--output',           default='./output',        help='Output folder.')
-parser.add_argument('--dataset',          default='./data/HED-BSDS', help='HED-BSDS dataset folder.')
+parser.add_argument('--dataset',          default='./data/TDP', help='HED-BSDS dataset folder.')
 # 5. Others.
 parser.add_argument('--cpu',              default=False,             help='Enable CPU mode.', action='store_true')
 args = parser.parse_args()
 
-# Set device.
-device = torch.device('cpu' if args.cpu else 'cuda')
+# Set device. 
+device = torch.device('cpu'if args.cpu else 'cuda')
 
 
 def main():
@@ -75,9 +75,9 @@ def main():
     train_dataset = BsdsDataset(dataset_dir=args.dataset, split='train')
     test_dataset  = BsdsDataset(dataset_dir=args.dataset, split='test')
     train_loader  = DataLoader(train_dataset, batch_size=args.train_batch_size,
-                               num_workers=4, drop_last=True, shuffle=True)
+                               num_workers=0, drop_last=True, shuffle=True)
     test_loader   = DataLoader(test_dataset,  batch_size=args.test_batch_size,
-                               num_workers=4, drop_last=False, shuffle=False)
+                               num_workers=0, drop_last=False, shuffle=False)
 
     ################################################
     # III. Network and optimizer.
@@ -146,8 +146,8 @@ def main():
     # Note: In train_val.prototxt and deploy.prototxt, the learning rates of score_final.weight/bias are different.
 
     # Learning rate scheduler.
-    lr_schd = lr_scheduler.StepLR(opt, step_size=args.lr_stepsize, gamma=args.lr_gamma)
-
+    #lr_schd = lr_scheduler.StepLR(opt, step_size=args.lr_stepsize, gamma=args.lr_gamma)
+    lr_schd = torch.optim.lr_scheduler.StepLR(opt, step_size=args.lr_stepsize, gamma=args.lr_gamma)
     ################################################
     # IV. Pre-trained parameters.
     ################################################
@@ -188,6 +188,7 @@ def main():
                             path=os.path.join(output_dir, 'epoch-{}-checkpoint.pt'.format(epoch)))
             # Collect losses.
             train_epoch_losses.append(train_epoch_loss)
+
 
 
 def train(train_loader, net, opt, lr_schd, epoch, save_dir):
